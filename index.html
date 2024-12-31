@@ -15,13 +15,13 @@
             <input type="text" id="eventName" name="eventName">
             <head>
                 <meta charset="UTF-8">
-                <title>飲んだもの選択フォーム</title>
+                <title>連続プルダウンメニュー</title>
                 <script>
-                    function addNewDrinkField() {
-                        var container = document.getElementById('drinkSelectionContainer');
-                        var newSelect = document.createElement('select');
-                        newSelect.name = 'drinks';
-                        newSelect.innerHTML = `
+                    function addNewDropdown() {
+                        // 新しいプルダウンメニューを作成
+                        var newDropdown = document.createElement('select');
+                        newDropdown.innerHTML = `
+                            <option value="">選択してください</option>
                             <option value="beer">ビール</option>
                             <option value="chuhai">チューハイ</option>
                             <option value="wine">ワイン</option>
@@ -30,15 +30,21 @@
                             <option value="cheap_sake">日本酒（安物）</option>
                             <option value="other">その他</option>
                         `;
-                        newSelect.onchange = addNewDrinkField; // 新しいフィールドにも同じイベントを設定
-                        container.appendChild(newSelect);
+                        newDropdown.onchange = addNewDropdown; // 新しいプルダウンにもイベントを設定
+            
+                        // プルダウンメニューを追加するコンテナを取得
+                        var container = document.getElementById('dropdownContainer');
+                        // コンテナに新しいプルダウンメニューを追加
+                        container.appendChild(newDropdown);
                     }
                 </script>
             </head>
             <body>
                 <form>
-                    <div id="drinkSelectionContainer">
-                        <select name="drinks" onchange="addNewDrinkField()">
+                    <div id="dropdownContainer">
+                        <!-- 最初のプルダウンメニュー -->
+                        <select onchange="addNewDropdown()">
+                            <option value="">選択してください</option>
                             <option value="beer">ビール</option>
                             <option value="chuhai">チューハイ</option>
                             <option value="wine">ワイン</option>
@@ -51,11 +57,4 @@
                     <input type="submit" value="送信">
                 </form>
             </body>
-            </html>
-        </p>
-        <p>
-            <input type="submit" value="送信">
-        </p>
-    </form>
-</body>
 </html>
