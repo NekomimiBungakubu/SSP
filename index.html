@@ -2,12 +2,60 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>テキスト入力フィールド</title>
+    <title>飲み会名を記載する</title>
 </head>
 <body>
     <form>
-        <label for="inputField">テキスト入力:</label>
-        <input type="text" id="inputField" name="inputField">
+        <p>
+            <label for="eventDate">日付:</label>
+            <input type="date" id="eventDate" name="eventDate">
+        </p>
+        <p>
+            <label for="eventName">飲み会名:</label>
+            <input type="text" id="eventName" name="eventName">
+            <head>
+                <meta charset="UTF-8">
+                <title>飲んだもの選択フォーム</title>
+                <script>
+                    function addNewDrinkField() {
+                        var container = document.getElementById('drinkSelectionContainer');
+                        var newSelect = document.createElement('select');
+                        newSelect.name = 'drinks';
+                        newSelect.innerHTML = `
+                            <option value="beer">ビール</option>
+                            <option value="chuhai">チューハイ</option>
+                            <option value="wine">ワイン</option>
+                            <option value="cheap_wine">ワイン（安物）</option>
+                            <option value="sake">日本酒</option>
+                            <option value="cheap_sake">日本酒（安物）</option>
+                            <option value="other">その他</option>
+                        `;
+                        newSelect.onchange = addNewDrinkField; // 新しいフィールドにも同じイベントを設定
+                        container.appendChild(newSelect);
+                    }
+                </script>
+            </head>
+            <body>
+                <form>
+                    <div id="drinkSelectionContainer">
+                        <select name="drinks" onchange="addNewDrinkField()">
+                            <option value="beer">ビール</option>
+                            <option value="chuhai">チューハイ</option>
+                            <option value="wine">ワイン</option>
+                            <option value="cheap_wine">ワイン（安物）</option>
+                            <option value="sake">日本酒</option>
+                            <option value="cheap_sake">日本酒（安物）</option>
+                            <option value="other">その他</option>
+                        </select>
+                    </div>
+                    <input type="submit" value="送信">
+                </form>
+            </body>
+            </html>
+        </p>
+        <p>
+            <input type="submit" value="送信">
+        </p>
     </form>
 </body>
 </html>
