@@ -17,7 +17,15 @@
                 <meta charset="UTF-8">
                 <title>連続プルダウンメニュー</title>
                 <script>
-                    function addNewDropdown() {
+                    var dropdownCount = 1; // プルダウンメニューの数をカウントする変数
+            
+                    function addNewDropdown(selectedValue) {
+                        // 選択結果を表示する
+                        var resultContainer = document.getElementById('resultContainer');
+                        var result = document.createElement('p');
+                        result.textContent = dropdownCount + '. "' + selectedValue + '"';
+                        resultContainer.appendChild(result);
+            
                         // 新しいプルダウンメニューを作成
                         var newDropdown = document.createElement('select');
                         newDropdown.innerHTML = `
@@ -30,20 +38,28 @@
                             <option value="cheap_sake">日本酒（安物）</option>
                             <option value="other">その他</option>
                         `;
-                        newDropdown.onchange = addNewDropdown; // 新しいプルダウンにもイベントを設定
+                        newDropdown.onchange = function() {
+                            addNewDropdown(this.value);
+                        };
             
                         // プルダウンメニューを追加するコンテナを取得
                         var container = document.getElementById('dropdownContainer');
                         // コンテナに新しいプルダウンメニューを追加
                         container.appendChild(newDropdown);
+            
+                        // プルダウンメニューの数を更新
+                        dropdownCount++;
                     }
                 </script>
             </head>
             <body>
                 <form>
+                    <div id="resultContainer">
+                        <!-- 選択結果を表示するコンテナ -->
+                    </div>
                     <div id="dropdownContainer">
                         <!-- 最初のプルダウンメニュー -->
-                        <select onchange="addNewDropdown()">
+                        <select onchange="addNewDropdown(this.value)">
                             <option value="">選択してください</option>
                             <option value="beer">ビール</option>
                             <option value="chuhai">チューハイ</option>
