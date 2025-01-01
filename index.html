@@ -10,6 +10,7 @@
     </style>
     <script>
         var drinkSelections = [];
+        var alertAfterNSelections = 3; // アラートを表示する選択回数を設定
 
         function submitEventInfo(event) {
             event.preventDefault();
@@ -52,6 +53,11 @@
             var listItem = document.createElement('li');
             listItem.textContent = drinkSelections.length + '. "' + selectedDrink + '"';
             selectionList.appendChild(listItem);
+
+            // n回目の選択でアラートを表示
+            if (drinkSelections.length === alertAfterNSelections) {
+                alert('n回目の入力が完了しました！');
+            }
 
             // 新しいプルダウンメニューを作成
             var newDropdown = document.createElement('select');
