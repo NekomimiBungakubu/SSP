@@ -17,17 +17,29 @@
                 <meta charset="UTF-8">
                 <title>連続プルダウンメニュー</title>
                 <script>
-                    var dropdownCount = 1; // プルダウンメニューの数をカウントする変数
+                    // 選択されたプルダウンメニューの値を保存する配列
+                    var selectedValues = [];
             
-                    function addNewDropdown(selectedValue) {
+                    function handleSubmit(event) {
+                        event.preventDefault(); // フォームの送信を防ぐ
+            
+                        // 現在のプルダウンメニューの値を取得して配列に追加
+                        var currentDropdown = document.getElementById('dropdown');
+                        var currentValue = currentDropdown.value;
+                        selectedValues.push(currentValue);
+            
                         // 選択結果を表示する
                         var resultContainer = document.getElementById('resultContainer');
-                        var result = document.createElement('p');
-                        result.textContent = dropdownCount + '. "' + selectedValue + '"';
-                        resultContainer.appendChild(result);
+                        resultContainer.innerHTML = ''; // 以前の結果をクリア
+                        selectedValues.forEach(function(value, index) {
+                            var result = document.createElement('p');
+                            result.textContent = (index + 1) + '. "' + value + '"';
+                            resultContainer.appendChild(result);
+                        });
             
                         // 新しいプルダウンメニューを作成
                         var newDropdown = document.createElement('select');
+                        newDropdown.id = 'dropdown';
                         newDropdown.innerHTML = `
                             <option value="">選択してください</option>
                             <option value="beer">ビール</option>
@@ -38,39 +50,28 @@
                             <option value="cheap_sake">日本酒（安物）</option>
                             <option value="other">その他</option>
                         `;
-                        newDropdown.onchange = function() {
-                            addNewDropdown(this.value);
-                        };
             
-                        // プルダウンメニューを追加するコンテナを取得
-                        var container = document.getElementById('dropdownContainer');
-                        // コンテナに新しいプルダウンメニューを追加
-                        container.appendChild(newDropdown);
-            
-                        // プルダウンメニューの数を更新
-                        dropdownCount++;
+                        // 古いプルダウンメニューを新しいものと置き換える
+                        var form = document.getElementById('form');
+                        form.replaceChild(newDropdown, currentDropdown);
                     }
                 </script>
             </head>
             <body>
-                <form>
+                <form id="form" onsubmit="handleSubmit(event)">
                     <div id="resultContainer">
                         <!-- 選択結果を表示するコンテナ -->
                     </div>
-                    <div id="dropdownContainer">
-                        <!-- 最初のプルダウンメニュー -->
-                        <select onchange="addNewDropdown(this.value)">
-                            <option value="">選択してください</option>
-                            <option value="beer">ビール</option>
-                            <option value="chuhai">チューハイ</option>
-                            <option value="wine">ワイン</option>
-                            <option value="cheap_wine">ワイン（安物）</option>
-                            <option value="sake">日本酒</option>
-                            <option value="cheap_sake">日本酒（安物）</option>
-                            <option value="other">その他</option>
-                        </select>
-                    </div>
+                    <select id="dropdown">
+                        <option value="">選択してください</option>
+                        <option value="beer">ビール</option>
+                        <option value="chuhai">チューハイ</option>
+                        <option value="wine">ワイン</option>
+                        <option value="cheap_wine">ワイン（安物）</option>
+                        <option value="sake">日本酒</option>
+                        <option value="cheap_sake">日本酒（安物）</option>
+                        <option value="other">その他</option>
+                    </select>
                     <input type="submit" value="送信">
                 </form>
             </body>
-</html>
