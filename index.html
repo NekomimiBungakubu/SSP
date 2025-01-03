@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>飲み会情報入力フォーム</title>
+    <style>
+        #eventInfo {
+            margin-bottom: 20px;
+        }
+    </style>
     <script>
         // APIエンドポイントのURL
         const apiEndpoint = 'https://0gmo4y5h70.execute-api.ap-southeast-2.amazonaws.com/SSPAPIStage';
@@ -18,12 +23,62 @@
             var eventName = document.getElementById('eventName').value;
             var sspCheck = document.getElementById('sspCheck').checked;
 
+            // 入力された飲み会情報をページ上部に表示
+            var eventInfoDiv = document.getElementById('eventInfo');
+            eventInfoDiv.innerHTML = `
+                <p>飲み会を行った日: ${eventDate}</p>
+                <p>飲み会名: ${eventName}</p>
+                <p>SSPの有無: ${sspCheck ? 'あり' : 'なし'}</p>
+            `;
+
+            // プルダウンメニューを表示
+            document.getElementById('drinkSelectionForm').style.display = 'block';
+        }
+
+        function addDrinkSelection(event) {
+            event.preventDefault();
+            var selectedDrink = document.getElementById('drinkDropdown').value;
+            if (selectedDrink) {
+                drinkSelections.push(selectedDrink); // 飲み物を配列に追加
+
+                // 選択された飲み物をリストに表示
+                var selectionList = document.getElementById('selectionList');
+                var listItem = document.createElement('li');
+                listItem.textContent = drinkSelections.length + '. "' + selectedDrink + '"';
+                selectionList.appendChild(listItem);
+
+                // 新しいプルダウンメニューを作成
+                createNewDropdown();
+
+                // 選択された飲み物をAPI Gatewayに送信
+                sendDataToApi();
+            }
+        }
+
+        function createNewDropdown() {
+            var form = document.getElementById('drinkSelectionForm');
+            form.innerHTML = `
+                <select id="drinkDropdown">
+                    <option value="">選択してください</option>
+                    <option value="beer">ビール</option>
+                    <option value="chuhai">チューハイ</option>
+                    <option value="wine">ワイン</option>
+                    <option value="cheap_wine">ワイン（安物）</option>
+                    <option value="sake">日本酒</option>
+                    <option value="cheap_sake">日本酒（安物）</option>
+                    <option value="other">その他</option>
+                </select>
+                <input type="submit" value="追加">
+            `;
+        }
+
+        function sendDataToApi() {
             // APIに送信するデータを作成
             var eventData = {
-                date: eventDate,
-                name: eventName,
-                ssp: sspCheck,
-                drinks: drinkSelections // 飲み物の選択を追加
+                date: document.getElementById('eventDate').value,
+                name: document.getElementById('eventName').value,
+                ssp: document.getElementById('sspCheck').checked,
+                drinks: drinkSelections
             };
 
             // APIエンドポイントにPOSTリクエストを送信
@@ -50,16 +105,6 @@
             });
         }
 
-        // 飲み物の選択を追加する関数
-        function addDrinkSelection(event) {
-            event.preventDefault();
-            var selectedDrink = document.getElementById('drinkDropdown').value;
-            if (selectedDrink) {
-                drinkSelections.push(selectedDrink); // 飲み物を配列に追加
-                // ここで選択された飲み物を画面に表示する処理を追加できます
-            }
-        }
-
         // ページ読み込み時のイベントリスナー
         document.addEventListener('DOMContentLoaded', function() {
             // フォームのsubmitイベントにハンドラーを設定
@@ -82,7 +127,9 @@
         <input type="submit" value="情報を送信">
     </form>
 
-    <form id="drinkSelectionForm" style="display:none;" onsubmit="addDrinkSelection(event)">
+    <div id="eventInfo"></div>
+
+    <form id="drinkSelectionForm" style="display:none;">
         <select id="drinkDropdown">
             <option value="">選択してください</option>
             <option value="beer">ビール</option>
@@ -95,5 +142,7 @@
         </select>
         <input type="submit" value="追加">
     </form>
+
+    <ul id="selectionList"></ul>
 </body>
 </html>
