@@ -2,102 +2,87 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>飲み会情報入力とプルダウンメニュー</title>
-    <style>
-        #eventInfo {
-            margin-bottom: 20px;
-        }
-    </style>
+    <title>飲み会情報入力フォーム</title>
     <script>
+        // APIエンドポイントのURL
+        const apiEndpoint = 'https://0gmo4y5h70.execute-api.ap-southeast-2.amazonaws.com/SSPAPIStage';
+
+        // 飲み物の選択を保持する配列
         var drinkSelections = [];
-        var alertAfterNSelections = 3; // アラートを表示する選択回数を設定
 
         function submitEventInfo(event) {
             event.preventDefault();
+
+            // フォームからデータを取得
             var eventDate = document.getElementById('eventDate').value;
             var eventName = document.getElementById('eventName').value;
-            var sppCheck = document.getElementById('sppCheck').checked;
+            var sspCheck = document.getElementById('sspCheck').checked;
 
-            // 1つ目の画面の情報を保存
-            var eventInfo = {
+            // APIに送信するデータを作成
+            var eventData = {
                 date: eventDate,
                 name: eventName,
-                spp: sppCheck
+                ssp: sspCheck,
+                drinks: drinkSelections // 飲み物の選択を追加
             };
-            localStorage.setItem('eventInfo', JSON.stringify(eventInfo));
 
-            // 2つ目の画面の上部に情報を表示
-            displayEventInfo();
-
-            // プルダウンメニューを表示
-            document.getElementById('drinkSelectionForm').style.display = 'block';
+            // APIエンドポイントにPOSTリクエストを送信
+            fetch(apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(eventData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                // ここに成功時の処理を記述
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // ここにエラー時の処理を記述
+            });
         }
 
-        function displayEventInfo() {
-            var eventInfo = JSON.parse(localStorage.getItem('eventInfo'));
-            var eventInfoDiv = document.getElementById('eventInfo');
-            eventInfoDiv.innerHTML = `
-                <p>飲み会を行った日: ${eventInfo.date}</p>
-                <p>飲み会名: ${eventInfo.name}</p>
-                <p>SPPの有無: ${eventInfo.spp ? 'あり' : 'なし'}</p>
-            `;
-        }
-
+        // 飲み物の選択を追加する関数
         function addDrinkSelection(event) {
             event.preventDefault();
             var selectedDrink = document.getElementById('drinkDropdown').value;
-            drinkSelections.push(selectedDrink);
-
-            // 選択結果を表示
-            var selectionList = document.getElementById('selectionList');
-            var listItem = document.createElement('li');
-            listItem.textContent = drinkSelections.length + '. "' + selectedDrink + '"';
-            selectionList.appendChild(listItem);
-
-            // n回目の選択でアラートを表示
-            if (drinkSelections.length === alertAfterNSelections) {
-                alert('そろそろ人格が入れ替わります。飲酒を控えてください。');
+            if (selectedDrink) {
+                drinkSelections.push(selectedDrink); // 飲み物を配列に追加
+                // ここで選択された飲み物を画面に表示する処理を追加できます
             }
-
-            // 新しいプルダウンメニューを作成
-            var newDropdown = document.createElement('select');
-            newDropdown.id = 'drinkDropdown';
-            newDropdown.innerHTML = `
-                <option value="">選択してください</option>
-                <option value="beer">ビール</option>
-                <option value="chuhai">チューハイ</option>
-                <option value="wine">ワイン</option>
-                <option value="cheap_wine">ワイン（安物）</option>
-                <option value="sake">日本酒</option>
-                <option value="cheap_sake">日本酒（安物）</option>
-                <option value="other">その他</option>
-            `;
-            document.getElementById('drinkSelectionForm').replaceChild(newDropdown, document.getElementById('drinkDropdown'));
         }
 
+        // ページ読み込み時のイベントリスナー
         document.addEventListener('DOMContentLoaded', function() {
-            // 2つ目の画面の情報を表示する場合
-            if (localStorage.getItem('eventInfo')) {
-                displayEventInfo();
-                document.getElementById('drinkSelectionForm').style.display = 'block';
-            }
+            // フォームのsubmitイベントにハンドラーを設定
+            var eventInfoForm = document.getElementById('eventInfoForm');
+            eventInfoForm.addEventListener('submit', submitEventInfo);
+
+            var drinkSelectionForm = document.getElementById('drinkSelectionForm');
+            drinkSelectionForm.addEventListener('submit', addDrinkSelection);
         });
     </script>
 </head>
 <body>
-    <form id="eventInfoForm" onsubmit="submitEventInfo(event)">
+    <form id="eventInfoForm">
         <label for="eventDate">飲み会を行った日:</label>
         <input type="date" id="eventDate" required><br>
         <label for="eventName">飲み会名:</label>
         <input type="text" id="eventName" required><br>
-        <label for="sppCheck">SPPの有無:</label>
-        <input type="checkbox" id="sppCheck"><br>
+        <label for="sspCheck">SSPの有無:</label>
+        <input type="checkbox" id="sspCheck"><br>
         <input type="submit" value="情報を送信">
     </form>
 
-    <div id="eventInfo"></div>
-
-    <form id="drinkSelectionForm" onsubmit="addDrinkSelection(event)" style="display:none;">
+    <form id="drinkSelectionForm" style="display:none;" onsubmit="addDrinkSelection(event)">
         <select id="drinkDropdown">
             <option value="">選択してください</option>
             <option value="beer">ビール</option>
@@ -110,7 +95,5 @@
         </select>
         <input type="submit" value="追加">
     </form>
-
-    <ul id="selectionList"></ul>
 </body>
 </html>
